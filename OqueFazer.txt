@@ -1,0 +1,11 @@
+adicionar o cubo
+mover o cubo com a camera acompanhando
+rotacionar o cubo
+obter o centro do cubo
+adicionar o chão
+adicionar outros cubos
+grudar outros cubos
+rotacionar e mover com outros cubos
+valcular o centro da camera corretamente
+mover co cubo para os lados
+mover o cubo para frente/traz
