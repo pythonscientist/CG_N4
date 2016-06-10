@@ -8,6 +8,8 @@
 #include "transform.h"
 #include "constantes.h"
 #include "mathdef.h"
+#include "mundo.h"
+#include "objetografico.h"
 
 #define EDICAO 0
 #define MANIPULACAO 1
@@ -21,16 +23,21 @@ GLfloat ortho2D_minX = -400.0f, ortho2D_maxX = 400.0f, ortho2D_minY = -400.0f, o
 GLfloat orthoLargura = ortho2D_maxX - ortho2D_minX;
 GLfloat orthoAltura  = ortho2D_maxY - ortho2D_minY;
 
+Mundo mundo;
+ObjetoGrafico *cuboPrincipal;
+
 float angleX = 0.0;
 float angleY = 0.0;
 float angleZ = 0.0;
+int c;
 
 VART::Transform transform;
 VART::Point4D eye(20.0f, 20.0f, 20.0f);
 VART::Point4D center(0.0f, 0.0f, 0.0f);
 
 void ligarLuz();
-void drawCube(GLfloat translacao[], GLfloat escala[], GLfloat angulo[]);
+void chessboard();
+void drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4);
 
 GLfloat translacaoCubo[] = {1.0f, 1.0f, 1.0f};
 GLfloat escalaCubo[]     = {2.0f, 2.0f, 2.0f};
@@ -61,68 +68,88 @@ void exibicaoPrincipal(void) {
 	
 	SRU();
 
-	drawCube(translacaoCubo, escalaCubo, anguloCubo);
+
+	c = 0;
 
 	// chão
 	glPushMatrix();
 		glScalef(escalaMundo[0], escalaMundo[1], escalaMundo[2]);
 		glTranslated(translacaoMundo[0], translacaoMundo[1], translacaoMundo[2]);
-		glBegin(GL_QUADS);
-			glColor3f(1.0f, 0.0f, 0.0f);
-			glVertex3f (0.0f, 0.0f,  0.0f);
-			glVertex3f(100.0f, 0.0f,  0.0f);
-			glVertex3f(100.0f, 0.0f, 100.0f);
-			glVertex3f( 0.0f, 0.0f, 100.0f);
-		glEnd();
+		chessboard();
+	//	glBegin(GL_QUADS);
+	//		glColor3f(1.0f, 0.0f, 0.0f);
+	//		glVertex3f (0.0f, 0.0f,  0.0f);
+	//		glVertex3f(100.0f, 0.0f,  0.0f);
+	//		glVertex3f(100.0f, 0.0f, 100.0f);
+	//		glVertex3f( 0.0f, 0.0f, 100.0f);
+	//	glEnd();
 	glPopMatrix();
 
 	///////
 	glutSwapBuffers();
 }
 
-void drawCube(GLfloat translacao[], GLfloat escala[], GLfloat angle[]) {
-	
-	//glEnable(GL_LIGHTING);
-	glPushMatrix();
-		glScalef(escala[0], escala[1], escala[2]);
-		glTranslated(translacao[0], translacao[1], translacao[2]);
-		glRotatef(angle[2], 0.0f, 0.0f, 1.0f);
-		glRotatef(angle[0], 1.0f, 0.0f, 0.0f);
-		glBegin(GL_QUADS);									// Draw A Quad
-		glColor3f(0.0f,1.0f,0.0f);						// Set The Color To Green
-		glVertex3f( 1.0f, 1.0f,-1.0f);					// Top Right Of The Quad (Top)
-		glVertex3f(-1.0f, 1.0f,-1.0f);					// Top Left Of The Quad (Top)
-		glVertex3f(-1.0f, 1.0f, 1.0f);					// Bottom Left Of The Quad (Top)
-		glVertex3f( 1.0f, 1.0f, 1.0f);					// Bottom Right Of The Quad (Top)
-		glColor3f(1.0f,0.5f,0.0f);						// Set The Color To Orange
-		glVertex3f( 1.0f,-1.0f, 1.0f);					// Top Right Of The Quad (Bottom)
-		glVertex3f(-1.0f,-1.0f, 1.0f);					// Top Left Of The Quad (Bottom)
-		glVertex3f(-1.0f,-1.0f,-1.0f);					// Bottom Left Of The Quad (Bottom)
-		glVertex3f( 1.0f,-1.0f,-1.0f);					// Bottom Right Of The Quad (Bottom)
-		glColor3f(1.0f,0.0f,0.0f);						// Set The Color To Red
-		glVertex3f( 1.0f, 1.0f, 1.0f);					// Top Right Of The Quad (Front)
-		glVertex3f(-1.0f, 1.0f, 1.0f);					// Top Left Of The Quad (Front)
-		glVertex3f(-1.0f,-1.0f, 1.0f);					// Bottom Left Of The Quad (Front)
-		glVertex3f( 1.0f,-1.0f, 1.0f);					// Bottom Right Of The Quad (Front)
-		glColor3f(1.0f,1.0f,0.0f);						// Set The Color To Yellow
-		glVertex3f( 1.0f,-1.0f,-1.0f);					// Top Right Of The Quad (Back)
-		glVertex3f(-1.0f,-1.0f,-1.0f);					// Top Left Of The Quad (Back)
-		glVertex3f(-1.0f, 1.0f,-1.0f);					// Bottom Left Of The Quad (Back)
-		glVertex3f( 1.0f, 1.0f,-1.0f);					// Bottom Right Of The Quad (Back)
-		glColor3f(0.0f,0.0f,1.0f);						// Set The Color To Blue
-		glVertex3f(-1.0f, 1.0f, 1.0f);					// Top Right Of The Quad (Left)
-		glVertex3f(-1.0f, 1.0f,-1.0f);					// Top Left Of The Quad (Left)
-		glVertex3f(-1.0f,-1.0f,-1.0f);					// Bottom Left Of The Quad (Left)
-		glVertex3f(-1.0f,-1.0f, 1.0f);					// Bottom Right Of The Quad (Left)
-		glColor3f(1.0f,0.0f,1.0f);						// Set The Color To Violet
-		glVertex3f( 1.0f, 1.0f,-1.0f);					// Top Right Of The Quad (Right)
-		glVertex3f( 1.0f, 1.0f, 1.0f);					// Top Left Of The Quad (Right)
-		glVertex3f( 1.0f,-1.0f, 1.0f);					// Bottom Left Of The Quad (Right)
-		glVertex3f( 1.0f,-1.0f,-1.0f);					// Bottom Right Of The Quad (Right)
+void drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4)
+{
+	// if color is 0 then draw white box and change value of color = 1
+	if (c == 0) {
+		glColor3f(1, 1, 1); // white color value is 1 1 1
+		c = 1;
+	} // if color is 1 then draw black box and change value of color = 0
+	else {
+		glColor3f(0, 0, 0); // black color value is 0 0 0
+		c = 0;
+	}
 
-	glEnd();	
-	glPopMatrix();
-	//glDisable(GL_LIGHTING);
+	// Draw Square
+	glBegin(GL_POLYGON);
+	glVertex3f(x1, 0.0f, y1);
+	glVertex3f(x2, 0.0f, y2);
+	glVertex3f(x3, 0.0f, y3);
+	glVertex3f(x4, 0.0f, y4);
+	glEnd();
+}
+
+void chessboard()
+{
+	GLint x, y;
+	for (x = 0; x <= 80; x += 10) {
+		for (y = 0; y <= 60; y += 7.5) {
+		drawSquare(x, y + 7.5, x + 10, y + 7.5, x + 10, y, x, y);
+		}
+	}
+}
+
+
+
+#define PUSH(px, py, pz) pontos_edicao.push_back(std::shared_ptr<VART::Point4D>(new VART::Point4D(px, py, pz, 1)))
+void mundoAdicionaCubo() {
+	std::vector<std::shared_ptr<VART::Point4D>> pontos_edicao;
+		PUSH( 1.0f, 1.0f,-1.0f);					// Top Right Of The Quad (Top)
+		PUSH(-1.0f, 1.0f,-1.0f);					// Top Left Of The Quad (Top)
+		PUSH(-1.0f, 1.0f, 1.0f);					// Bottom Left Of The Quad (Top)
+		PUSH( 1.0f, 1.0f, 1.0f);					// Bottom Right Of The Quad (Top)
+		PUSH( 1.0f,-1.0f, 1.0f);					// Top Right Of The Quad (Bottom)
+		PUSH(-1.0f,-1.0f, 1.0f);					// Top Left Of The Quad (Bottom)
+		PUSH(-1.0f,-1.0f,-1.0f);					// Bottom Left Of The Quad (Bottom)
+		PUSH( 1.0f,-1.0f,-1.0f);					// Bottom Right Of The Quad (Bottom)
+		PUSH( 1.0f, 1.0f, 1.0f);					// Top Right Of The Quad (Front)
+		PUSH(-1.0f, 1.0f, 1.0f);					// Top Left Of The Quad (Front)
+		PUSH(-1.0f,-1.0f, 1.0f);					// Bottom Left Of The Quad (Front)
+		PUSH( 1.0f,-1.0f, 1.0f);					// Bottom Right Of The Quad (Front)
+		PUSH( 1.0f,-1.0f,-1.0f);					// Top Right Of The Quad (Back)
+		PUSH(-1.0f,-1.0f,-1.0f);					// Top Left Of The Quad (Back)
+		PUSH(-1.0f, 1.0f,-1.0f);					// Bottom Left Of The Quad (Back)
+		PUSH( 1.0f, 1.0f,-1.0f);					// Bottom Right Of The Quad (Back)
+		PUSH(-1.0f, 1.0f, 1.0f);					// Top Right Of The Quad (Left)
+		PUSH(-1.0f, 1.0f,-1.0f);					// Top Left Of The Quad (Left)
+		PUSH(-1.0f,-1.0f,-1.0f);					// Bottom Left Of The Quad (Left)
+		PUSH(-1.0f,-1.0f, 1.0f);					// Bottom Right Of The Quad (Left)
+		PUSH( 1.0f, 1.0f,-1.0f);					// Top Right Of The Quad (Right)
+		PUSH( 1.0f, 1.0f, 1.0f);					// Top Left Of The Quad (Right)
+		PUSH( 1.0f,-1.0f, 1.0f);					// Bottom Left Of The Quad (Right)
+		PUSH( 1.0f,-1.0f,-1.0f);					// Bottom Right Of The Quad (Right)
+		mundo.adicionarNovoObjetoGrafico(pontos_edicao);
 }
 
 void ligarLuz() {
