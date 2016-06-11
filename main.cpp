@@ -85,6 +85,10 @@ void exibicaoPrincipal(void) {
 	//	glEnd();
 	glPopMatrix();
 
+	for (auto x : mundo.objetosGraficos) {
+		x->draw();
+	}
+
 	///////
 	glutSwapBuffers();
 }
@@ -190,14 +194,6 @@ void rotateZ(GLfloat n) {
 void teclaPressionada(unsigned char tecla, int x, int y) {
 
 	switch (tecla) {
-	//case 'q':
-	//	angleX += 5;
-	//	rotateX(angleX);
-	//break;
-	//case 'a':
-	//	angleX -= 5;
-	//	rotateX(angleX);
-	//break;
 	case 'w':
 		angleY += 5;
 		rotateY(angleY);
@@ -206,33 +202,31 @@ void teclaPressionada(unsigned char tecla, int x, int y) {
 		angleY -= 5;
 		rotateY(angleY);
 	break;
-	//case 'e':
-	//	angleZ += 5;
-	//	rotateZ(angleZ);
-	//break;
-	//case 'd':
-	//	angleZ -= 5;
-	//	rotateZ(angleZ);
-	//break;
 	case 'z':
 		translacaoMundo[0] += 1;
-		anguloCubo[2] += 10;
-		if (anguloCubo[2] > 360)  anguloCubo[2] = anguloCubo[2] - 360;
+		cuboPrincipal->rotacionaZ(10);
+		cuboPrincipal->aplicaTransformacao();
 	break;
 	case 'x':
 		translacaoMundo[0] -= 1;
-		anguloCubo[2] -= 10;
-		if (anguloCubo[2] < 0)  anguloCubo[2] = 360 - anguloCubo[2];
+		cuboPrincipal->rotacionaZ(-10);
+		cuboPrincipal->aplicaTransformacao();
 	break;
 	case 'c':
 		translacaoMundo[2] += 1;
-		anguloCubo[0] -= 10;
-		if (anguloCubo[0] < 0)  anguloCubo[0] = 360 - anguloCubo[0];
+		cuboPrincipal->rotacionaX(-10);
+		cuboPrincipal->aplicaTransformacao();
 	break;
 	case 'v':
 		translacaoMundo[2] -= 1;
-		anguloCubo[0] += 10;
-		if (anguloCubo[0] > 360)  anguloCubo[0] = anguloCubo[0] - 360;
+		cuboPrincipal->rotacionaX(10);
+		cuboPrincipal->aplicaTransformacao();
+	break;
+	case 'q':
+		mundoAdicionaCubo();
+		cuboPrincipal = mundo.objetosGraficos[0].get();
+	break;
+	case 'e':
 	break;
 	}
 

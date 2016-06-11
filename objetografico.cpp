@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <GL/glut.h>
 
 #include "boundingbox.h"
 #include "point4d.h"
@@ -128,7 +129,7 @@ void ObjetoGrafico::moverDireita(double n) {
 	}
 }
 
-void ObjetoGrafico::rotaciona(double n, VART::Point4D *p) {
+void ObjetoGrafico::rotacionaZ(double n, VART::Point4D *p) {
 	VART::Transform t; //translação
 	VART::Transform r; // rotacao
 	VART::Transform i; // translação inversa
@@ -150,9 +151,36 @@ void ObjetoGrafico::rotaciona(double n, VART::Point4D *p) {
 	transform = transform * (i * (r * t));
 	
 	for (auto o : objetosGraficos) {
-		o->rotaciona(n, &pto);
+		o->rotacionaZ(n, &pto);
 	}
 }
+
+void ObjetoGrafico::rotacionaX(double n, VART::Point4D *p) {
+	VART::Transform t; //translação
+	VART::Transform r; // rotacao
+	VART::Transform i; // translação inversa
+	VART::Point4D pto = bbox.GetCenter();
+	if (p != nullptr && 0) {
+		pto = VART::Point4D(p);
+	}
+
+	// rotacao em si
+	r.MakeXRotation(RAS_DEG_TO_RAD * n);
+
+	// tranlacao inversa, voltando a posicao original
+	i.MakeTranslation(pto);
+
+	// tranlacao para origem
+	pto = -pto;
+	t.MakeTranslation(pto);
+	
+	transform = transform * (i * (r * t));
+	
+	for (auto o : objetosGraficos) {
+		o->rotacionaX(n, &pto);
+	}
+}
+
 
 void ObjetoGrafico::escalaAmplia(double n, VART::Point4D *p) {
 	VART::Transform t; //translação
@@ -207,4 +235,30 @@ void ObjetoGrafico::escalaReduz(double n, VART::Point4D *p) {
 
 void ObjetoGrafico::adicionarNovoObjetoGrafico(std::vector<std::shared_ptr<VART::Point4D>> pPoints) {
 	objetosGraficos.push_back(std::shared_ptr<ObjetoGrafico>(new ObjetoGrafico(pPoints, this)));
+}
+
+void ObjetoGrafico::draw() {
+	int i=0;
+	glPushMatrix();
+        glMultMatrixd(transform.GetData());
+	glBegin(GL_QUADS);
+		for (auto x : pontos) {
+			if (i % 3 == 0) {
+				glColor3f(1.0f, 0.0f, 0.0f);
+			} else {
+				glColor3f(0.0f, 1.0f, 0.0f);
+			}
+			i += 1;	
+			glVertex3f(x->GetX(), x->GetY(), x->GetZ());
+		}
+	glEnd();
+	glPopMatrix();
+}
+
+void ObjetoGrafico::aplicaTransformacao()
+{
+	for (auto x : pontos) {
+		transform.ApplyTo(x.get());
+	}
+	transform.MakeIdentity();	
 }

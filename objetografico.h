@@ -72,7 +72,8 @@ struct ObjetoGrafico {
 	/// \brief realiza a rotação
 	/// \param n quantidade
 	/// \param p centro	
-	void rotaciona(double n, VART::Point4D *p=nullptr);
+	void rotacionaZ(double n, VART::Point4D *p=nullptr);
+	void rotacionaX(double n, VART::Point4D *p=nullptr);
 
 	/// \brief realiza a ampliação
 	/// \param n quantidade
@@ -87,4 +88,8 @@ struct ObjetoGrafico {
 	/// \brief Adiciona um novo objeto gráfico filho
 	/// \param pPoints pontos		
 	void adicionarNovoObjetoGrafico(std::vector<std::shared_ptr<VART::Point4D>> pPoints);
+
+	void draw();
+
+	void aplicaTransformacao();
 };
