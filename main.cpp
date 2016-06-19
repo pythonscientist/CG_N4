@@ -24,27 +24,17 @@ GLfloat orthoLargura = ortho2D_maxX - ortho2D_minX;
 GLfloat orthoAltura  = ortho2D_maxY - ortho2D_minY;
 
 Mundo mundo;
-ObjetoGrafico *cuboPrincipal;
 
 float angleX = 0.0;
 float angleY = 0.0;
 float angleZ = 0.0;
-int c;
 
 VART::Transform transform;
 VART::Point4D eye(20.0f, 20.0f, 20.0f);
 VART::Point4D center(0.0f, 0.0f, 0.0f);
 
 void ligarLuz();
-void chessboard();
-void drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4);
-
-GLfloat translacaoCubo[] = {1.0f, 1.0f, 1.0f};
-GLfloat escalaCubo[]     = {2.0f, 2.0f, 2.0f};
-GLfloat anguloCubo[]     = {0.0f, 0.0f, 0.0f};
-GLfloat translacaoMundo[] = {0.0f, 0.0f, 0.0f};
-GLfloat escalaMundo[]     = {1.0f, 1.0f, 1.0f};
-
+void drawbbox(ObjetoGrafico *objetoGrafico);
 
 void inicializacao(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0);
@@ -60,6 +50,46 @@ void inicializacao(void) {
 	transform.MakeIdentity();
 }
 
+void drawbbox(ObjetoGrafico *objetoGrafico)
+{
+	GLfloat sX = objetoGrafico->bbox.GetSmallerX();
+	GLfloat sY = objetoGrafico->bbox.GetSmallerY();
+	GLfloat sZ = objetoGrafico->bbox.GetSmallerZ();
+	GLfloat gX = objetoGrafico->bbox.GetGreaterX(); 
+	GLfloat gY = objetoGrafico->bbox.GetGreaterY(); 
+	GLfloat gZ = objetoGrafico->bbox.GetGreaterZ();
+	std::cout << sX << " " << sY << " " << sZ << std::endl;
+	std::cout << gX << " " << gY << " " << gZ << std::endl;
+
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin (GL_LINE_LOOP);
+		glVertex3d(gX, gY,sZ);					// Top Right Of The Quad (Top)
+		glVertex3d(sX, gY,sZ);					// Top Left Of The Quad (Top)
+		glVertex3d(sX, gY, gZ);					// Bottom Left Of The Quad (Top)
+		glVertex3d(gX, gY, gZ);					// Bottom Right Of The Quad (Top)
+		glVertex3d(gX, sY, gZ);					// Top Right Of The Quad (Bottom)
+		glVertex3d(sX, sY, gZ);					// Top Left Of The Quad (Bottom)
+		glVertex3d(sX, sY,sZ);					// Bottom Left Of The Quad (Bottom)
+		glVertex3d(gX, sY,sZ);					// Bottom Right Of The Quad (Bottom)
+		glVertex3d(gX, gY, gZ);					// Top Right Of The Quad (Front)
+		glVertex3d(sX, gY, gZ);					// Top Left Of The Quad (Front)
+		glVertex3d(sX, sY, gZ);					// Bottom Left Of The Quad (Front)
+		glVertex3d(gX, sY, gZ);					// Bottom Right Of The Quad (Front)
+		glVertex3d(gX, sY,sZ);					// Top Right Of The Quad (Back)
+		glVertex3d(sX, sY,sZ);					// Top Left Of The Quad (Back)
+		glVertex3d(sX, gY,sZ);					// Bottom Left Of The Quad (Back)
+		glVertex3d(gX, gY,sZ);					// Bottom Right Of The Quad (Back)
+		glVertex3d(sX, gY, gZ);					// Top Right Of The Quad (Left)
+		glVertex3d(sX, gY,sZ);					// Top Left Of The Quad (Left)
+		glVertex3d(sX, sY,sZ);					// Bottom Left Of The Quad (Left)
+		glVertex3d(sX, sY, gZ);					// Bottom Right Of The Quad (Left)
+		glVertex3d(gX, gY,sZ);					// Top Right Of The Quad (Right)
+		glVertex3d(gX, gY, gZ);					// Top Left Of The Quad (Right)
+		glVertex3d(gX, sY, gZ);					// Bottom Left Of The Quad (Right)
+		glVertex3d(gX, sY,sZ);					// Bottom Right Of The Quad (Right)
+    glEnd();
+}
+
 void exibicaoPrincipal(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -68,92 +98,23 @@ void exibicaoPrincipal(void) {
 	
 	SRU();
 
-
-	c = 0;
-
 	// chão
-	glPushMatrix();
-		glScalef(escalaMundo[0], escalaMundo[1], escalaMundo[2]);
-		glTranslated(translacaoMundo[0], translacaoMundo[1], translacaoMundo[2]);
-		chessboard();
-	//	glBegin(GL_QUADS);
-	//		glColor3f(1.0f, 0.0f, 0.0f);
-	//		glVertex3f (0.0f, 0.0f,  0.0f);
-	//		glVertex3f(100.0f, 0.0f,  0.0f);
-	//		glVertex3f(100.0f, 0.0f, 100.0f);
-	//		glVertex3f( 0.0f, 0.0f, 100.0f);
-	//	glEnd();
-	glPopMatrix();
+	mundo.chessboard();
 
-	for (auto x : mundo.objetosGraficos) {
-		x->draw();
-	}
+	// objeto principal
+	mundo.cuboPrincipal.draw();
+	drawbbox(&mundo.cuboPrincipal);
+
+//	for (auto x : mundo.objetosGraficos) {
+//		glPushMatrix();
+//		x->draw();
+//		drawbbox(x.get());
+//		glPopMatrix();
+//	}
+
 
 	///////
 	glutSwapBuffers();
-}
-
-void drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4)
-{
-	// if color is 0 then draw white box and change value of color = 1
-	if (c == 0) {
-		glColor3f(1, 1, 1); // white color value is 1 1 1
-		c = 1;
-	} // if color is 1 then draw black box and change value of color = 0
-	else {
-		glColor3f(0, 0, 0); // black color value is 0 0 0
-		c = 0;
-	}
-
-	// Draw Square
-	glBegin(GL_POLYGON);
-	glVertex3f(x1, 0.0f, y1);
-	glVertex3f(x2, 0.0f, y2);
-	glVertex3f(x3, 0.0f, y3);
-	glVertex3f(x4, 0.0f, y4);
-	glEnd();
-}
-
-void chessboard()
-{
-	GLint x, y;
-	for (x = 0; x <= 80; x += 10) {
-		for (y = 0; y <= 60; y += 7.5) {
-		drawSquare(x, y + 7.5, x + 10, y + 7.5, x + 10, y, x, y);
-		}
-	}
-}
-
-
-
-#define PUSH(px, py, pz) pontos_edicao.push_back(std::shared_ptr<VART::Point4D>(new VART::Point4D(px, py, pz, 1)))
-void mundoAdicionaCubo() {
-	std::vector<std::shared_ptr<VART::Point4D>> pontos_edicao;
-		PUSH( 1.0f, 1.0f,-1.0f);					// Top Right Of The Quad (Top)
-		PUSH(-1.0f, 1.0f,-1.0f);					// Top Left Of The Quad (Top)
-		PUSH(-1.0f, 1.0f, 1.0f);					// Bottom Left Of The Quad (Top)
-		PUSH( 1.0f, 1.0f, 1.0f);					// Bottom Right Of The Quad (Top)
-		PUSH( 1.0f,-1.0f, 1.0f);					// Top Right Of The Quad (Bottom)
-		PUSH(-1.0f,-1.0f, 1.0f);					// Top Left Of The Quad (Bottom)
-		PUSH(-1.0f,-1.0f,-1.0f);					// Bottom Left Of The Quad (Bottom)
-		PUSH( 1.0f,-1.0f,-1.0f);					// Bottom Right Of The Quad (Bottom)
-		PUSH( 1.0f, 1.0f, 1.0f);					// Top Right Of The Quad (Front)
-		PUSH(-1.0f, 1.0f, 1.0f);					// Top Left Of The Quad (Front)
-		PUSH(-1.0f,-1.0f, 1.0f);					// Bottom Left Of The Quad (Front)
-		PUSH( 1.0f,-1.0f, 1.0f);					// Bottom Right Of The Quad (Front)
-		PUSH( 1.0f,-1.0f,-1.0f);					// Top Right Of The Quad (Back)
-		PUSH(-1.0f,-1.0f,-1.0f);					// Top Left Of The Quad (Back)
-		PUSH(-1.0f, 1.0f,-1.0f);					// Bottom Left Of The Quad (Back)
-		PUSH( 1.0f, 1.0f,-1.0f);					// Bottom Right Of The Quad (Back)
-		PUSH(-1.0f, 1.0f, 1.0f);					// Top Right Of The Quad (Left)
-		PUSH(-1.0f, 1.0f,-1.0f);					// Top Left Of The Quad (Left)
-		PUSH(-1.0f,-1.0f,-1.0f);					// Bottom Left Of The Quad (Left)
-		PUSH(-1.0f,-1.0f, 1.0f);					// Bottom Right Of The Quad (Left)
-		PUSH( 1.0f, 1.0f,-1.0f);					// Top Right Of The Quad (Right)
-		PUSH( 1.0f, 1.0f, 1.0f);					// Top Left Of The Quad (Right)
-		PUSH( 1.0f,-1.0f, 1.0f);					// Bottom Left Of The Quad (Right)
-		PUSH( 1.0f,-1.0f,-1.0f);					// Bottom Right Of The Quad (Right)
-		mundo.adicionarNovoObjetoGrafico(pontos_edicao);
 }
 
 void ligarLuz() {
@@ -192,7 +153,12 @@ void rotateZ(GLfloat n) {
 }
 
 void teclaPressionada(unsigned char tecla, int x, int y) {
-
+	VART::Point4D vector;
+	vector.SetX(1.0f);
+	vector.SetY(1.0f);
+	vector.SetZ(1.0f);
+	mundo.transformacao.ApplyTo(&vector);
+	std::cout << "X = " << vector.GetX() << " Y = " << vector.GetY() << " Z = " << vector.GetZ() << std::endl;
 	switch (tecla) {
 	case 'w':
 		angleY += 5;
@@ -203,37 +169,49 @@ void teclaPressionada(unsigned char tecla, int x, int y) {
 		rotateY(angleY);
 	break;
 	case 'z':
-		translacaoMundo[0] += 1;
-		cuboPrincipal->rotacionaZ(10);
-		cuboPrincipal->aplicaTransformacao();
+		if (vector.GetX() <= 0) {
+			mundo.translacao(1.0, 0.0, 0.0);
+			mundo.cuboPrincipal.rotacionaZ(10);
+			mundo.cuboPrincipal.aplicaTransformacao();
+			mundo.cuboPrincipal.updateBBox();
+		}
 	break;
 	case 'x':
-		translacaoMundo[0] -= 1;
-		cuboPrincipal->rotacionaZ(-10);
-		cuboPrincipal->aplicaTransformacao();
+		if (vector.GetX() >= -88) {
+			mundo.translacao(-1.0, 0.0, 0.0);
+			mundo.cuboPrincipal.rotacionaZ(-10);
+			mundo.cuboPrincipal.aplicaTransformacao();
+			mundo.cuboPrincipal.updateBBox();
+		}
 	break;
 	case 'c':
-		translacaoMundo[2] += 1;
-		cuboPrincipal->rotacionaX(-10);
-		cuboPrincipal->aplicaTransformacao();
+		if (vector.GetZ() <= 0) {
+			mundo.translacao(0.0, 0.0, 1.0);
+			mundo.cuboPrincipal.rotacionaX(-10);
+			mundo.cuboPrincipal.aplicaTransformacao();
+			mundo.cuboPrincipal.updateBBox();
+		}
 	break;
 	case 'v':
-		translacaoMundo[2] -= 1;
-		cuboPrincipal->rotacionaX(10);
-		cuboPrincipal->aplicaTransformacao();
+		if (vector.GetZ() >= -61) {
+			mundo.translacao(0.0, 0.0, -1.0);
+			mundo.cuboPrincipal.rotacionaX(10);
+			mundo.cuboPrincipal.aplicaTransformacao();
+			mundo.cuboPrincipal.updateBBox();
+		}
 	break;
 	case 'q':
-		mundoAdicionaCubo();
-		cuboPrincipal = mundo.objetosGraficos[0].get();
+		//mundo.cuboPrincipal = mundo.objetosGraficos[0].get();
+	break;
+	case 'p':
+		//mundoAdicionaCubo(20.0f, 20.0f);
 	break;
 	case 'e':
 	break;
 	}
 
-	//transform.MakeIdentity();
-
-	std::cout << "Eye    =(" << eye.GetX() << ", " << eye.GetY() << ", " << eye.GetZ() << ")" << std::endl;
-	std::cout << "ECenter=(" << center.GetX() << ", " << center.GetY() << ", " << center.GetZ() << ")" << std::endl;
+	//std::cout << "Eye    =(" << eye.GetX() << ", " << eye.GetY() << ", " << eye.GetZ() << ")" << std::endl;
+	//std::cout << "ECenter=(" << center.GetX() << ", " << center.GetY() << ", " << center.GetZ() << ")" << std::endl;
 
 	glutPostRedisplay();
 }

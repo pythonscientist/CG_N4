@@ -1,5 +1,6 @@
 #include "objetografico.h"
 
+#include <iostream>
 #include <vector>
 #include <memory>
 #include <GL/glut.h>
@@ -43,6 +44,10 @@ Limite ObjetoGrafico::obterLimite(bool transform_points) {
 			limite.minY = r.GetY();
 		}
 		
+		if (r.GetZ() < limite.minZ) {
+			limite.minZ = r.GetZ();
+		}
+		
 		if (r.GetX() > limite.maxX) {
 			limite.maxX = r.GetX();
 		}
@@ -50,13 +55,17 @@ Limite ObjetoGrafico::obterLimite(bool transform_points) {
 		if (r.GetY() > limite.maxY) {
 			limite.maxY = r.GetY();
 		}
+
+		if (r.GetZ() > limite.maxZ) {
+			limite.maxZ = r.GetZ();
+		}
 	}
 	return limite;
 }
 
 void ObjetoGrafico::updateBBox() {
 	Limite limite = obterLimite();
-	bbox.SetBoundingBox(limite.minX, limite.minY, 0, limite.maxX, limite.maxY, 0);
+	bbox.SetBoundingBox(limite.minX, limite.minY, limite.minZ, limite.maxX, limite.maxY, limite.maxZ);
 }
 
 int ObjetoGrafico::contaObjetosGraficos() {

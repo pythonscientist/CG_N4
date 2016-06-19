@@ -12,7 +12,7 @@
 /// \class Limite objetografico.h
 /// \brief representa os limites de um polígono
 struct Limite {
-	double minX=999999, minY=999999, maxX=-999999, maxY=-999999;
+	double minX=999999, minY=999999, maxX=-999999, maxY=-999999, minZ=999999, maxZ=-999999;
 };
 
 /// \class ObjetoGrafico objetografico.h
