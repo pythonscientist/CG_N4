@@ -42,6 +42,7 @@ Mundo::Mundo() {
 	PUSH( 1.0f+x,-1.0f+y,-1.0f+z);					// Bottom Right Of The Quad (Right)
 	std::cout << "fim PUSH" << std::endl;
 	cuboPrincipal = ObjetoGrafico(pPontos, nullptr);
+	cuboPrincipal.visivel = true;
 }
 void Mundo::adicionarNovoObjetoGrafico(std::vector<std::shared_ptr<VART::Point4D>> pPoints) {
 	objetosGraficos.push_back(std::shared_ptr<ObjetoGrafico>(new ObjetoGrafico(pPoints, nullptr)));

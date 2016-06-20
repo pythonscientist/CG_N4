@@ -32,6 +32,8 @@ struct ObjetoGrafico {
 	/// Pai do objeto gráfico
 	ObjetoGrafico *pai;
 
+	bool visivel;
+
 	/// Cria um objeto vaziu
 	ObjetoGrafico();
 

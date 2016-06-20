@@ -53,10 +53,18 @@ void inicializacao(void) {
 
 void checaColisao() {
 	for (auto x : mundo.objetosGraficos) {
+	    if (x->visivel) {
 	    x->bbox.ApplyTransform(mundo.transformacao);
             bool test = x->bbox.testAABBAABB(mundo.cuboPrincipal.bbox);
+	    if (test) {
+		mundo.cuboPrincipal.escalaAmplia(1.1);	
+		mundo.cuboPrincipal.moverCima(0.2);
+		mundo.cuboPrincipal.updateBBox();
+		x->visivel = false;
+	    }
 	    x->updateBBox();
 	    std::cout << "AABBAABB = "<< test << std::endl;
+	    }
 		
 	}
 }
@@ -108,14 +116,14 @@ void exibicaoPrincipal(void) {
 	gluLookAt(eye.GetX(), eye.GetY(), eye.GetZ(), center.GetX(), center.GetY(), center.GetZ(), 0.0f, 1.0f, 0.0f);
 
 	/////////	
-	SRU();
+	//SRU();
 
 	// chão
 	mundo.chessboard();
 
 	// objeto principal
 	mundo.cuboPrincipal.draw();
-	drawbbox(&mundo.cuboPrincipal);
+	//drawbbox(&mundo.cuboPrincipal);
 	mundo.draw();
 
 	///////
@@ -206,12 +214,46 @@ void teclaPressionada(unsigned char tecla, int x, int y) {
 		}
 	break;
 	case 'q':
+		 eye.SetX(eye.GetX());
+		 eye.SetY(eye.GetY() +2);
+		 eye.SetZ(eye.GetZ());
 		//mundo.cuboPrincipal = mundo.objetosGraficos[0].get();
 	break;
 	case 'p':
+		if (mundo.objetosGraficos.size() <= 0) {
+		mundo.adicionaCubo(10.0f, 1.0f, 20.0f);
 		mundo.adicionaCubo(20.0f, 1.0f, 20.0f);
+		mundo.adicionaCubo(30.0f, 1.0f, 20.0f);
+		mundo.adicionaCubo(40.0f, 1.0f, 20.0f);
+		mundo.adicionaCubo(50.0f, 1.0f, 20.0f);
+		mundo.adicionaCubo(60.0f, 1.0f, 20.0f);
+		mundo.adicionaCubo(70.0f, 1.0f, 20.0f);
+		mundo.adicionaCubo(80.0f, 1.0f, 20.0f);
+		mundo.adicionaCubo(90.0f, 1.0f, 20.0f);
+		mundo.adicionaCubo(10.0f, 1.0f, 40.0f);
+		mundo.adicionaCubo(20.0f, 1.0f, 40.0f);
+		mundo.adicionaCubo(30.0f, 1.0f, 40.0f);
+		mundo.adicionaCubo(40.0f, 1.0f, 40.0f);
+		mundo.adicionaCubo(50.0f, 1.0f, 40.0f);
+		mundo.adicionaCubo(60.0f, 1.0f, 40.0f);
+		mundo.adicionaCubo(70.0f, 1.0f, 40.0f);
+		mundo.adicionaCubo(80.0f, 1.0f, 40.0f);
+		mundo.adicionaCubo(90.0f, 1.0f, 40.0f);
+		} else {
+			for (auto x : mundo.objetosGraficos) {
+				x->visivel = true;
+			}
+		}
 	break;
 	case 'e':
+		 eye.SetX(eye.GetX());
+		 eye.SetY(eye.GetY() -2);
+		 eye.SetZ(eye.GetZ());
+	break;
+	case 'r':
+		mundo.cuboPrincipal.escalaAmplia(0.9);	
+		mundo.cuboPrincipal.moverBaixo(0.2);
+		mundo.cuboPrincipal.updateBBox();
 	break;
 	}
 

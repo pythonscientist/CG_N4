@@ -12,7 +12,7 @@
 #include "mathdef.h"
 
 
-ObjetoGrafico::ObjetoGrafico() {};
+ObjetoGrafico::ObjetoGrafico() : visivel(true) {};
 
 ObjetoGrafico::ObjetoGrafico(std::vector<std::shared_ptr<VART::Point4D>> pPontos, ObjetoGrafico *pai) {
 	
@@ -23,6 +23,8 @@ ObjetoGrafico::ObjetoGrafico(std::vector<std::shared_ptr<VART::Point4D>> pPontos
 	transform.MakeIdentity();
 	updateBBox();
 	this->pai = pai;
+
+	visivel = true;
 	
 	std::cout << "novo objeto grafico em " << this << std::endl;
 	
@@ -201,7 +203,7 @@ void ObjetoGrafico::escalaAmplia(double n, VART::Point4D *p) {
 	}
 
 	// escala em si
-	e.MakeScale(n, n, 0);
+	e.MakeScale(n, n, n);
 
 	// tranlacao inversa, voltando a posicao original
 	i.MakeTranslation(pto);
@@ -247,6 +249,7 @@ void ObjetoGrafico::adicionarNovoObjetoGrafico(std::vector<std::shared_ptr<VART:
 }
 
 void ObjetoGrafico::draw() {
+	if (visivel) {
 	int i=0;
 	glPushMatrix();
         glMultMatrixd(transform.GetData());
@@ -262,6 +265,7 @@ void ObjetoGrafico::draw() {
 		}
 	glEnd();
 	glPopMatrix();
+	}
 }
 
 void ObjetoGrafico::aplicaTransformacao()
