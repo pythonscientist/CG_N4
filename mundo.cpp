@@ -96,3 +96,41 @@ void Mundo::translacao(GLfloat x, GLfloat y, GLfloat z) {
 	transformacao = transformacao * t;
 	
 }
+
+void Mundo::adicionaCubo(GLfloat x, GLfloat y, GLfloat z) {
+	std::vector<std::shared_ptr<VART::Point4D>> pPontos;
+	PUSH( 1.0f+x, 1.0f+y,-1.0f+z);					// Top Right Of The Quad (Top)
+	PUSH(-1.0f+x, 1.0f+y,-1.0f+z);					// Top Left Of The Quad (Top)
+	PUSH(-1.0f+x, 1.0f+y, 1.0f+z);					// Bottom Left Of The Quad (Top)
+	PUSH( 1.0f+x, 1.0f+y, 1.0f+z);					// Bottom Right Of The Quad (Top)
+	PUSH( 1.0f+x,-1.0f+y, 1.0f+z);					// Top Right Of The Quad (Bottom)
+	PUSH(-1.0f+x,-1.0f+y, 1.0f+z);					// Top Left Of The Quad (Bottom)
+	PUSH(-1.0f+x,-1.0f+y,-1.0f+z);					// Bottom Left Of The Quad (Bottom)
+	PUSH( 1.0f+x,-1.0f+y,-1.0f+z);					// Bottom Right Of The Quad (Bottom)
+	PUSH( 1.0f+x, 1.0f+y, 1.0f+z);					// Top Right Of The Quad (Front)
+	PUSH(-1.0f+x, 1.0f+y, 1.0f+z);					// Top Left Of The Quad (Front)
+	PUSH(-1.0f+x,-1.0f+y, 1.0f+z);					// Bottom Left Of The Quad (Front)
+	PUSH( 1.0f+x,-1.0f+y, 1.0f+z);					// Bottom Right Of The Quad (Front)
+	PUSH( 1.0f+x,-1.0f+y,-1.0f+z);					// Top Right Of The Quad (Back)
+	PUSH(-1.0f+x,-1.0f+y,-1.0f+z);					// Top Left Of The Quad (Back)
+	PUSH(-1.0f+x, 1.0f+y,-1.0f+z);					// Bottom Left Of The Quad (Back)
+	PUSH( 1.0f+x, 1.0f+y,-1.0f+z);					// Bottom Right Of The Quad (Back)
+	PUSH(-1.0f+x, 1.0f+y, 1.0f+z);					// Top Right Of The Quad (Left)
+	PUSH(-1.0f+x, 1.0f+y,-1.0f+z);					// Top Left Of The Quad (Left)
+	PUSH(-1.0f+x,-1.0f+y,-1.0f+z);					// Bottom Left Of The Quad (Left)
+	PUSH(-1.0f+x,-1.0f+y, 1.0f+z);					// Bottom Right Of The Quad (Left)
+	PUSH( 1.0f+x, 1.0f+y,-1.0f+z);					// Top Right Of The Quad (Right)
+	PUSH( 1.0f+x, 1.0f+y, 1.0f+z);					// Top Left Of The Quad (Right)
+	PUSH( 1.0f+x,-1.0f+y, 1.0f+z);					// Bottom Left Of The Quad (Right)
+	PUSH( 1.0f+x,-1.0f+y,-1.0f+z);					// Bottom Right Of The Quad (Right)
+	adicionarNovoObjetoGrafico(pPontos);
+}
+
+void Mundo::draw() {
+	for (auto x : objetosGraficos) {
+		glPushMatrix();
+        	glMultMatrixd(transformacao.GetData());
+		x->draw();
+		glPopMatrix();
+	}
+}

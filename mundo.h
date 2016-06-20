@@ -27,5 +27,7 @@ struct Mundo {
 	void drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4);
 	void chessboard();
 	void translacao(GLfloat x, GLfloat y, GLfloat z);
+	void adicionaCubo(GLfloat x, GLfloat y, GLfloat z);
+	void draw();
 
 };

@@ -35,6 +35,7 @@ VART::Point4D center(0.0f, 0.0f, 0.0f);
 
 void ligarLuz();
 void drawbbox(ObjetoGrafico *objetoGrafico);
+void checaColisao();
 
 void inicializacao(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0);
@@ -48,6 +49,16 @@ void inicializacao(void) {
 	//glDisable(GL_DEPTH_TEST);
 
 	transform.MakeIdentity();
+}
+
+void checaColisao() {
+	for (auto x : mundo.objetosGraficos) {
+	    x->bbox.ApplyTransform(mundo.transformacao);
+            bool test = x->bbox.testAABBAABB(mundo.cuboPrincipal.bbox);
+	    x->updateBBox();
+	    std::cout << "AABBAABB = "<< test << std::endl;
+		
+	}
 }
 
 void drawbbox(ObjetoGrafico *objetoGrafico)
@@ -95,7 +106,8 @@ void exibicaoPrincipal(void) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(eye.GetX(), eye.GetY(), eye.GetZ(), center.GetX(), center.GetY(), center.GetZ(), 0.0f, 1.0f, 0.0f);
-	
+
+	/////////	
 	SRU();
 
 	// chão
@@ -104,14 +116,7 @@ void exibicaoPrincipal(void) {
 	// objeto principal
 	mundo.cuboPrincipal.draw();
 	drawbbox(&mundo.cuboPrincipal);
-
-//	for (auto x : mundo.objetosGraficos) {
-//		glPushMatrix();
-//		x->draw();
-//		drawbbox(x.get());
-//		glPopMatrix();
-//	}
-
+	mundo.draw();
 
 	///////
 	glutSwapBuffers();
@@ -204,11 +209,14 @@ void teclaPressionada(unsigned char tecla, int x, int y) {
 		//mundo.cuboPrincipal = mundo.objetosGraficos[0].get();
 	break;
 	case 'p':
-		//mundoAdicionaCubo(20.0f, 20.0f);
+		mundo.adicionaCubo(20.0f, 1.0f, 20.0f);
 	break;
 	case 'e':
 	break;
 	}
+
+
+	checaColisao();
 
 	//std::cout << "Eye    =(" << eye.GetX() << ", " << eye.GetY() << ", " << eye.GetZ() << ")" << std::endl;
 	//std::cout << "ECenter=(" << center.GetX() << ", " << center.GetY() << ", " << center.GetZ() << ")" << std::endl;

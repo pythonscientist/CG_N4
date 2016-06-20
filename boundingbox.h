@@ -7,6 +7,7 @@
 
 #include "point4d.h"
 #include "color.h"
+#include "transform.h"
 #ifdef VART_OGL
 	#if defined(__APPLE__) || defined(MACOSX)
         #include <GLUT/glut.h>
